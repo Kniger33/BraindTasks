@@ -1,7 +1,8 @@
 <?php
-    const PREVIEW_SYMBOL_NUMBER = 200;
-    const SYMBOL_ELLIPSIS = '...';
-    const WORDS_COUNT = 3;
+    const CONST_PREVIEW_SYMBOL_NUMBER = 200;
+    const CONST_SYMBOL_ELLIPSIS = '...';
+    const CONST_WORDS_COUNT = 3;
+    const CONST_SEPARATOR = ' ';
 
     $articleLink = '../front/article.php';
     $articleText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore 
@@ -10,13 +11,13 @@
     pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
 
     $cutOutWords = [];
-    $cutOutSpacesCount = [];
+    $cutOutSeparatorsCount = [];
 
     $articleTextCopy = '';
 
-    if (strlen($articleText) > PREVIEW_SYMBOL_NUMBER)
+    if (strlen($articleText) > CONST_PREVIEW_SYMBOL_NUMBER)
     {
-        $articleTextCopy = cutText($articleText, PREVIEW_SYMBOL_NUMBER);
+        $articleTextCopy = cutText($articleText, CONST_PREVIEW_SYMBOL_NUMBER);
     }
     else
     {
@@ -69,16 +70,16 @@
         $referenceBefore = '<a href="' . $articleLink . '?articleText=' . $articleText . '">';
         $referenceAfter = '</a>';
 
-        for ($i = 0; $i < WORDS_COUNT; $i++)
+        for ($i = 0; $i < CONST_WORDS_COUNT; $i++)
         {
-            $text = cutLastSpaces($text, $i);
+            $text = cutLastSeparators($text, $i);
             $text = cutLastWord($text, $i);
         }
 
         $text .= $referenceBefore;
 
         $text = insertWords($text);
-        $text = addSymbolAtTextEnd($text, SYMBOL_ELLIPSIS);
+        $text = addSymbolAtTextEnd($text, CONST_SYMBOL_ELLIPSIS);
 
         $text .= $referenceAfter;
 
@@ -87,21 +88,21 @@
 
     /*
      * Description:
-     * Counts and returns number of spaces at the end of text
+     * Counts and returns number of separators at the end of text
      *
-     * @param {string} text - text you need to add count spaces at the end
+     * @param {string} text - text you need to add count separators at the end
      *
-     * @return {int) - count spaces at the end of text
+     * @return {int) - count separators at the end of text
      */
-    function getSpaceCountAtEnd(string $text): int
+    function getSeparatorsCountAtEnd(string $text): int
     {
-        $spaceCount = 0;
+        $separatorsCount = 0;
 
-        for ($i = strlen($text) - 1; $i > 0; $i--)
+        for ($i = strlen($text) - 1; $i >= 0; $i--)
         {
-            if ($text[$i] == ' ')
+            if ($text[$i] == CONST_SEPARATOR)
             {
-                $spaceCount++;
+                $separatorsCount++;
             }
             else if (ctype_alpha($text[$i]))
             {
@@ -109,27 +110,27 @@
             }
         }
 
-        return $spaceCount;
+        return $separatorsCount;
     }
 
     /*
      * Description:
-     * Cutout last 'number' spaces at the end of 'text' text
+     * Cutout last 'number' separators at the end of 'text' text
      *
-     * @param {string} text - text you need to cut out spaces
-     * @param {int} number - number of spaces to cut out
+     * @param {string} text - text you need to cut out separators
+     * @param {int} number - number of separators to cut out
      *
-     * @return {string) - text with cutted out spaces at the end
+     * @return {string) - text with cutted out separators at the end
      */
-    function cutLastSpaces(string $text, int $number): string
+    function cutLastSeparators(string $text, int $number): string
     {
-        global $cutOutSpacesCount;
+        global $cutOutSeparatorsCount;
 
-        $cutOutSpacesCount[$number] = getSpaceCountAtEnd($text);
+        $cutOutSeparatorsCount[$number] = getSeparatorsCountAtEnd($text);
 
-        if ($cutOutSpacesCount[$number] != 0)
+        if ($cutOutSeparatorsCount[$number] != 0)
         {
-            $text = substr($text, 0, -$cutOutSpacesCount[$number]);
+            $text = substr($text, 0, -$cutOutSeparatorsCount[$number]);
         }
 
         return $text;
@@ -147,9 +148,9 @@
     function cutLastWord(string $text, int $wordNumber): string
     {
         global $cutOutWords;
-        for ($i = strlen($text) - 1; $i > 0; $i--)
+        for ($i = strlen($text) - 1; $i >= 0; $i--)
         {
-            if ($text[$i] == ' ')
+            if ($text[$i] == CONST_SEPARATOR)
             {
                 break;
             }
@@ -162,22 +163,22 @@
 
     /*
      * Description:
-     * Insert all cutted out words and spaces at the end of 'text' text
+     * Insert all cutted out words and separators at the end of 'text' text
      *
-     * @param {string} text - text you need to insert words and spaces
+     * @param {string} text - text you need to insert words and separators
      *
-     * @return {string) - text with inserted words and spaces at the end
+     * @return {string) - text with inserted words and separators at the end
      */
     function insertWords(string $text): string
     {
-        global $cutOutWords, $cutOutSpacesCount;
+        global $cutOutWords, $cutOutSeparatorsCount;
 
-        for ($i = WORDS_COUNT - 1; $i >= 0; $i--)
+        for ($i = CONST_WORDS_COUNT - 1; $i >= 0; $i--)
         {
             $text .= $cutOutWords[$i];
-            for ($j = 0; $j < $cutOutSpacesCount[$i]; $j++)
+            for ($j = 0; $j < $cutOutSeparatorsCount[$i]; $j++)
             {
-                $text .= ' ';
+                $text .= CONST_SEPARATOR;
             }
         }
 
