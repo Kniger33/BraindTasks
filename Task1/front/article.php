@@ -6,7 +6,7 @@
 </head>
 <body>
     <?php $articleText = $_GET['articleText'];
-    print($articleText);
+        print($articleText);
     ?>
 </body>
 </html>
